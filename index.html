@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>0bin - 安全的文字分享网站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 1em;
+        }
+        .zennable {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background-color: white;
+        }
+        .zennable label {
+            position: absolute;
+            right: 0;
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            font-weight: 500;
+            padding: 0.375em;
+            color: #999;
+            top: -2.375em;
+        }
+        .zennable textarea {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            color: #333;
+            display: block;
+            line-height: 1.5em;
+            width: 100%;
+            height: 100%;
+            font-size: 1.375em;
+            max-width: 36em;
+            padding: 1em;
+            background-color: white;
+            margin: 0 auto;
+            border: 0;
+            resize: none;
+            border-radius: 0;
+            outline: none;
+        }
+        .zennable textarea:focus {
+            background-color: white;
+        }
+        .zennable .tip {
+            background-color: white;
+            opacity: 0.9;
+            display: block;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="zennable">
+    <textarea placeholder="阅后即焚或最迟1天后失效"></textarea>
+    <label class="tip"></label>
+</div>
+<script>
+window.$ = function(selector) {
+    var selectorType = 'querySelectorAll';
+    if (selector.indexOf('#') === 0) {
+        selectorType = 'getElementById';
+        selector = selector.substr(1, selector.length);
+    }
+    var doms = document[selectorType](selector);
+    return doms.length === 1 ? doms[0] : doms;
+};
+var delay = function() {
+    var timer;
+    return function(callback, ms) {
+        clearTimeout(timer);
+        timer = setTimeout(callback, ms);
+    };
+}();
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', '/api'+window.location.pathname);
+xhr.onload = function() {
+    if (xhr.status === 200) {
+        $('.zennable textarea').value = xhr.responseText;
+        if (xhr.responseText.length > 0) {
+            $('.zennable .tip').innerHTML = '已焚';
+        }
+    }
+};
+xhr.send();
+
+$('.zennable textarea').addEventListener('keyup', function(event) {
+    delay(function() {
+        $('.zennable .tip').style.color = '';
+        $('.zennable .tip').innerHTML = '保存中...';
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api'+window.location.pathname);
+        xhr.setRequestHeader('Content-Type', 'text/plain');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                $('.zennable .tip').innerHTML = '已保存';
+            } else if (xhr.status !== 200) {
+                $('.zennable .tip').style.color = 'red';
+                $('.zennable .tip').innerHTML = '保存失败';
+            }
+        };
+        xhr.send($('.zennable textarea').value);
+    }, 1000);
+});
+</script>
+</body>
+</html>
