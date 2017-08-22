@@ -62,7 +62,7 @@
 </head>
 <body>
 <div class="zennable">
-    <textarea placeholder="阅后即焚或最迟 1 天后销毁"></textarea>
+    <textarea placeholder="正在载入..." readOnly></textarea>
     <label class="tip"></label>
 </div>
 <script>
@@ -83,22 +83,34 @@ var delay = function() {
     };
 }();
 
-var xhr = new XMLHttpRequest();
-xhr.open('GET', '/api'+window.location.pathname);
-xhr.onload = function() {
-    if (xhr.status === 200) {
-        $('.zennable textarea').value = xhr.responseText;
-        if (xhr.responseText.length > 0) {
-            $('.zennable .tip').innerHTML = '已销毁';
-        }
-
-        re = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)
-        if (xhr.responseText.match(re)) {
-            window.location.href = xhr.responseText;
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    var timeout = 1800;
+    if (window.location.hash) {
+        timeout = 0;
+        history.pushState('', document.title, window.location.pathname);
     }
-};
-xhr.send();
+
+    setTimeout(function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api'+window.location.pathname);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                $('.zennable textarea').readOnly = false;
+                $('.zennable textarea').placeholder = '阅后即焚或最迟 1 天后销毁';
+                $('.zennable textarea').value = xhr.responseText;
+                if (xhr.responseText.length > 0) {
+                    $('.zennable .tip').innerHTML = '已销毁';
+                }
+
+                re = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)
+                if (xhr.responseText.match(re)) {
+                    window.location.href = xhr.responseText;
+                }
+            }
+        };
+        xhr.send();
+    }, timeout)
+}, false);
 
 $('.zennable textarea').addEventListener('keyup', function(event) {
     delay(function() {
@@ -109,14 +121,14 @@ $('.zennable textarea').addEventListener('keyup', function(event) {
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.onload = function() {
             if (xhr.status === 200) {
-                $('.zennable .tip').innerHTML = '已保存';
+                $('.zennable .tip').innerHTML = '';
             } else if (xhr.status !== 200) {
                 $('.zennable .tip').style.color = 'red';
                 $('.zennable .tip').innerHTML = '保存失败';
             }
         };
         xhr.send($('.zennable textarea').value);
-    }, 1000);
+    }, 500);
 });
 </script>
 </body>

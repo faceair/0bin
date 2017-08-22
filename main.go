@@ -83,7 +83,7 @@ func main() {
 
 	panic(http.ListenAndServe(":8061", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			http.Redirect(w, r, "/"+randString(5), 302)
+			http.Redirect(w, r, "/"+randString(5)+"#new", 302)
 		}
 		if strings.HasPrefix(r.URL.Path, "/api") {
 			if r.Method == "GET" {
