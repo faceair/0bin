@@ -1,0 +1,3 @@
+package: github.com/faceair/firetext
+import:
+- package: github.com/gorilla/websocket
