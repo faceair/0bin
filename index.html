@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="utf-8">
-    <title>0bin - 安全的文字分享网站</title>
+    <title>FireText - 阅后即焚</title>
     <meta name="robots" CONTENT="noindex, nofollow">
     <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABZ0lEQVRYR+3VO0gdURDG8d+1EhQEwcIinU9QxMImTQrLgHaxsbewEEsbCxsLLVUkggpWMWijEMTOVyGI2Ai+W0lqAwHRcOAE5HID+1Auwg4syy47+/3PNzPnlFQ5SlXWVwAUDrxrB75gPe8U5XHgBHsYzwORB2AZnZjFRlaIPACbWMIcutGMm7QgWQCa8Atn+Igp3CO838dWGogsACuYwA564sqP8AODaMXvpBBZAG6xjWeMRaEwDf0IfXGHhbcC6MNhFA+CB1FoGB/iWH6NMIkY0jqwiBr0IsD8izo8xIdrtCRSJ/VpeI4R/MHxf0Qu0fZWABfoiCWopFGL07g/JGJIW4IrdEUHKgmE7fkTRhOpZyjBDH4i3MujITboAMKkJIq0DoRm28U3zOMxqjTiO1axlkg5fpQWIKTVYxqf44bUjiFMZjkTsgC8XGDID9dTmlWX/yBr7qvk5XUgN0QBUDhQOFB1B/4C/es3IfZVRjQAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,7 +62,7 @@
 </head>
 <body>
 <div class="zennable">
-    <textarea placeholder="阅后即焚或最迟1天后销毁"></textarea>
+    <textarea placeholder="阅后即焚或最迟 1 天后销毁"></textarea>
     <label class="tip"></label>
 </div>
 <script>
@@ -90,6 +90,11 @@ xhr.onload = function() {
         $('.zennable textarea').value = xhr.responseText;
         if (xhr.responseText.length > 0) {
             $('.zennable .tip').innerHTML = '已销毁';
+        }
+
+        re = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)
+        if (xhr.responseText.match(re)) {
+            window.location.href = xhr.responseText;
         }
     }
 };

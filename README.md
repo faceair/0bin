@@ -1,3 +1,3 @@
-# 0bin
+# FireText
 
 阅后即焚
